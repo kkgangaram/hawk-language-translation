@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genesys Embedded UI</title>
+    <style>
+        :root {
+            --humana-green: #78BE20;
+            --humana-dark-green: #005F4B;
+            --bg-color: #f4f7f6;
+            --chat-bg: #ffffff;
+            --caller-bubble: #E8F5E9;
+            /* Light green */
+            --agent-bubble: #f1f0f0;
+            /* Light grey */
+            --text-primary: #333;
+            --text-secondary: #666;
+            --border-radius: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            color: var(--text-primary);
+        }
+
+        .chat-widget {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--chat-bg);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            max-height: 100vh;
+        }
+
+        @media (min-width: 500px) {
+            .chat-widget {
+                max-height: 90vh;
+                margin-top: 2vh;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+        }
+
+        .chat-header {
+            background-color: var(--humana-green);
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+
+        .chat-header h1 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .chat-header .status {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* New Button Style */
+        .history-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            margin-right: 10px;
+            transition: background 0.2s;
+        }
+
+        .history-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .chat-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #fff;
+        }
+
+        .message-wrapper {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+        }
+
+        .message-wrapper.external {
+            align-self: flex-start;
+        }
+
+        .message-wrapper.internal {
+            align-self: flex-end;
+        }
+
+        .message-bubble {
+            padding: 10px 14px;
+            border-radius: var(--border-radius);
+            position: relative;
+            font-size: 0.95rem;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message-wrapper.external .message-bubble {
+            background-color: var(--caller-bubble);
+            color: var(--text-primary);
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-wrapper.internal .message-bubble {
+            background-color: var(--agent-bubble);
+            color: var(--text-primary);
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-info {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 4px;
+            padding: 0 4px;
+        }
+
+        .message-wrapper.internal .message-info {
+            text-align: right;
+        }
+
+        .system-message {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            margin: 10px 0;
+            padding: 8px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            align-self: center;
+            width: 90%;
+        }
+
+        /* Scrollbar styling */
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background-color: #ddd;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-widget">
+        <div class="chat-header">
+            <div>
+                <h1>Language Translation</h1>
+            </div>
+            <div class="status">
+                <button id="history-btn" class="history-btn" style="display:none;">Show History</button>
+                <span class="status-dot"></span>
+                <span id="connection-status">Live</span>
+            </div>
+        </div>
+
+        <!-- Hidden field for Conversation ID -->
+        <input type="hidden" id="conversation-id" value="" />
+
+        <div id="translation-container" class="chat-container">
+            <div class="system-message" id="initial-status">Waiting for conversation...</div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const socket = io();
+
+            function getQueryParams() {
+                const params = new URLSearchParams(window.location.search);
+                return {
+                    conversationId: params.get('conversationid') || params.get('conversationId'), // Handle both cases
+                    language: params.get('language')
+                };
+            }
+
+            const params = getQueryParams();
+            const conversationIdEl = document.getElementById('conversation-id');
+            const translationContainer = document.getElementById('translation-container');
+            const initialStatus = document.getElementById('initial-status');
+            const historyBtn = document.getElementById('history-btn');
+
+            let lastChannel = null;
+            let lastMessageWrapper = null;
+
+            if (params.conversationId) {
+                console.log('Joining conversation:', params.conversationId);
+                socket.emit('join', params.conversationId);
+                conversationIdEl.value = params.conversationId;
+                historyBtn.style.display = 'inline-block'; // Show button if conversationId exists
+            } else {
+                conversationIdEl.value = 'Not provided';
+            }
+
+            // Function to add message to UI
+            function addMessageToUI(content, msg) {
+                // Remove initial status if present
+                if (initialStatus) {
+                    initialStatus.style.display = 'none';
+                }
+
+                const currentChannel = content.channel || 'unknown'; // Ensure channel is defined
+                const textToAppend = content.translatedtext || msg.data;
+
+                // Handle various date formats or fallback
+                let timeString = '';
+                if (msg && msg.publishTime) {
+                    // From Pub/Sub (Socket)
+                    timeString = new Date(msg.publishTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } else if (content.publishTime && content.publishTime.value) {
+                    // From BigQuery (e.g. { value: "2023-..." })
+                    timeString = new Date(content.publishTime.value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } else {
+                    timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                }
+
+                // Check if we can group with previous message
+                // Only group if it's the exact same channel and the last element was a message wrapper
+                // AND it's not a history load (which might re-order logic, but let's keep simple)
+                if (currentChannel === lastChannel && lastMessageWrapper) {
+                    const bubble = lastMessageWrapper.querySelector('.message-bubble');
+
+                    // Add a break or space before appending? 
+                    // Usually chat bubbles just append text if it's a stream, or new bubble if it's a new thought.
+                    // Assuming stream of chunks for the same thought:
+                    bubble.textContent += " " + textToAppend;
+
+                    // Update time
+                    const timeEl = lastMessageWrapper.querySelector('.message-info span');
+                    if (timeEl) timeEl.textContent = timeString;
+
+                } else {
+                    // Create New Message Wrapper
+                    const wrapperDiv = document.createElement('div');
+                    wrapperDiv.className = `message-wrapper ${currentChannel}`;
+
+                    // Determine Sender Name
+                    let senderName;
+                    if (currentChannel === 'external') {
+                        senderName = 'Caller';
+                    } else if (currentChannel === 'internal') {
+                        senderName = 'Agent';
+                    } else {
+                        // Fallback to Agent for any other channel types
+                        senderName = 'Agent';
+                    }
+
+                    const bubbleDiv = document.createElement('div');
+                    bubbleDiv.className = 'message-bubble';
+                    bubbleDiv.textContent = textToAppend;
+
+                    const infoDiv = document.createElement('div');
+                    infoDiv.className = 'message-info';
+                    infoDiv.innerHTML = `<span>${senderName} • ${timeString}</span>`;
+
+                    wrapperDiv.appendChild(bubbleDiv);
+                    wrapperDiv.appendChild(infoDiv);
+
+                    translationContainer.appendChild(wrapperDiv);
+
+                    // Update state
+                    lastChannel = currentChannel;
+                    lastMessageWrapper = wrapperDiv;
+                }
+
+                // Auto-scroll to bottom
+                translationContainer.scrollTop = translationContainer.scrollHeight;
+            }
+
+            // Fetch History Handler
+            historyBtn.addEventListener('click', () => {
+                if (!params.conversationId) return;
+
+                // Clear existing content and reset grouping state
+                translationContainer.innerHTML = '';
+                lastChannel = null;
+                lastMessageWrapper = null;
+
+                historyBtn.disabled = true;
+                historyBtn.textContent = 'Loading...';
+
+                // Optional: Add a loading indicator in the container
+                const loadingMsg = document.createElement('div');
+                loadingMsg.className = 'system-message';
+                loadingMsg.textContent = 'Loading history...';
+                loadingMsg.id = 'history-loading-msg';
+                translationContainer.appendChild(loadingMsg);
+
+                fetch(`/api/history/${params.conversationId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Failed to fetch history');
+                        return response.json();
+                    })
+                    .then(messages => {
+                        // Remove loading message
+                        const loadingEl = document.getElementById('history-loading-msg');
+                        if (loadingEl) loadingEl.remove();
+
+                        if (messages.length === 0) {
+                            const info = document.createElement('div');
+                            info.className = 'system-message';
+                            info.textContent = 'No history found.';
+                            translationContainer.appendChild(info);
+                        } else {
+                            // Reset grouping for history batch (already done, but good practice)
+                            lastChannel = null;
+                            lastMessageWrapper = null;
+
+                            messages.forEach(msg => {
+                                // BigQuery returns object directly as content
+                                addMessageToUI(msg, {});
+                            });
+
+                            // Reset grouping after history so new live messages don't merge with history weirdly
+                            lastChannel = null;
+                            lastMessageWrapper = null;
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        // Remove loading message if error
+                        const loadingEl = document.getElementById('history-loading-msg');
+                        if (loadingEl) loadingEl.remove();
+                        alert('Error fetching history');
+                    })
+                    .finally(() => {
+                        historyBtn.disabled = false;
+                        historyBtn.textContent = 'Show History';
+                    });
+            });
+
+
+            // Socket.IO event listener
+            socket.on('pubsub-message', (msg) => {
+                console.log('New message:', msg);
+
+                try {
+                    const content = JSON.parse(msg.data);
+
+                    // Filter by conversationId
+                    if (content.conversationId === params.conversationId) {
+                        addMessageToUI(content, msg);
+                    }
+                } catch (e) {
+                    console.error('Error parsing message data:', e);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

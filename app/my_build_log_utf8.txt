@@ -1,0 +1,174 @@
+﻿
+> audiohook-sample-server@1.0.2 build
+> tsc --project tsconfig.json --pretty
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m333[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m333[0m             this.openTimer = this.openTimer?.cancel() ?? null;
+[7m   [0m [91m            ~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m333[0m:[93m30[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m333[0m             this.openTimer = this.openTimer?.cancel() ?? null;
+[7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m391[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m391[0m         this.pingTimerInitial = this.pingTimerInitial?.cancel() ?? null;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m391[0m:[93m33[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m391[0m         this.pingTimerInitial = this.pingTimerInitial?.cancel() ?? null;
+[7m   [0m [91m                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m392[0m:[93m9[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m392[0m         this.pingTimerInterval = this.pingTimerInterval?.cancel() ?? null;
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m392[0m:[93m34[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m392[0m         this.pingTimerInterval = this.pingTimerInterval?.cancel() ?? null;
+[7m   [0m [91m                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m441[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m441[0m             this.openTimer = this.openTimer?.cancel() ?? null;
+[7m   [0m [91m            ~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m441[0m:[93m30[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m441[0m             this.openTimer = this.openTimer?.cancel() ?? null;
+[7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m442[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m442[0m             this.closeTimer = this.closeTimer?.cancel() ?? null;
+[7m   [0m [91m            ~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m442[0m:[93m31[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m442[0m             this.closeTimer = this.closeTimer?.cancel() ?? null;
+[7m   [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m563[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m563[0m             this.closeTimer = this.closeTimer?.cancel() ?? null;
+[7m   [0m [91m            ~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m563[0m:[93m31[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m563[0m             this.closeTimer = this.closeTimer?.cancel() ?? null;
+[7m   [0m [91m                              ~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m597[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'void' is not assignable to type 'TimerSubscription'.
+
+[7m597[0m             this.openTimer = this.openTimer?.cancel() ?? null;
+[7m   [0m [91m            ~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/client/clientsessionimpl.ts[0m:[93m597[0m:[93m30[0m - [91merror[0m[90m TS1345: [0mAn expression of type 'void' cannot be tested for truthiness.
+
+[7m597[0m             this.openTimer = this.openTimer?.cancel() ?? null;
+[7m   [0m [91m                             ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m181[0m:[93m9[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<MediaParameter>'.
+  Type '{}' is missing the following properties from type 'OptionalParameterValidator<MediaParameter>': rate, channels, format, type
+
+[7m181[0m         {}
+[7m   [0m [91m        ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m211[0m:[93m9[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<Participant>'.
+  Type '{}' is missing the following properties from type 'OptionalParameterValidator<Participant>': id, ani, aniName, dnis
+
+[7m211[0m         {}
+[7m   [0m [91m        ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m222[0m:[93m9[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<ContinuedSession>'.
+  Type '{}' is missing the following properties from type 'OptionalParameterValidator<ContinuedSession>': id, serverseq, clientseq
+
+[7m222[0m         {}
+[7m   [0m [91m        ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m254[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<CloseParameters>'.
+  Property 'reason' is missing in type '{}' but required in type 'OptionalParameterValidator<CloseParameters>'.
+
+[7m254[0m     {}
+[7m   [0m [91m    ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m268[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ info: (value: JsonValue) => value is string; }' is not assignable to parameter of type 'OptionalParameterValidator<DisconnectParameters>'.
+  Property 'reason' is missing in type '{ info: (value: JsonValue) => value is string; }' but required in type 'OptionalParameterValidator<DisconnectParameters>'.
+
+[7m268[0m     {
+[7m   [0m [91m    ~[0m
+[7m269[0m         info: isString
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m270[0m     }
+[7m   [0m [91m~~~~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m279[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<DiscardedParameters>'.
+  Type '{}' is missing the following properties from type 'OptionalParameterValidator<DiscardedParameters>': start, discarded
+
+[7m279[0m     {}
+[7m   [0m [91m    ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m286[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<EventParameters>'.
+  Property 'entities' is missing in type '{}' but required in type 'OptionalParameterValidator<EventParameters>'.
+
+[7m286[0m     {}
+[7m   [0m [91m    ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m294[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ retryAfter: (value: JsonValue) => value is `PT${number}S`; }' is not assignable to parameter of type 'OptionalParameterValidator<ErrorParameters>'.
+  Type '{ retryAfter: (value: JsonValue) => value is `PT${number}S`; }' is missing the following properties from type 'OptionalParameterValidator<ErrorParameters>': code, message
+
+[7m294[0m     {
+[7m   [0m [91m    ~[0m
+[7m295[0m         retryAfter: isDuration
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m296[0m     }
+[7m   [0m [91m~~~~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m307[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ language: (value: JsonValue) => value is string; supportedLanguages: (value: JsonValue) => value is boolean; continuedSessions: (value: JsonValue) => value is ContinuedSessions; customConfig: (value: unknown) => value is JsonObject; }' is not assignable to parameter of type 'OptionalParameterValidator<OpenParameters>'.
+  Type '{ language: (value: JsonValue) => value is string; supportedLanguages: (value: JsonValue) => value is boolean; continuedSessions: (value: JsonValue) => value is ContinuedSessions; customConfig: (value: unknown) => value is JsonObject; }' is missing the following properties from type 'OptionalParameterValidator<OpenParameters>': organizationId, conversationId, participant, media
+
+[7m307[0m     {
+[7m   [0m [91m    ~[0m
+[7m308[0m         language: isLanguageCode,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m311[0m         customConfig: isJsonObject
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m312[0m     }
+[7m   [0m [91m~~~~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m320[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ discardTo: (value: JsonValue) => value is `PT${number}S`; startPaused: (value: JsonValue) => value is boolean; supportedLanguages: (value: JsonValue) => value is SupportedLanguages; }' is not assignable to parameter of type 'OptionalParameterValidator<OpenedParameters>'.
+  Property 'media' is missing in type '{ discardTo: (value: JsonValue) => value is `PT${number}S`; startPaused: (value: JsonValue) => value is boolean; supportedLanguages: (value: JsonValue) => value is SupportedLanguages; }' but required in type 'OptionalParameterValidator<OpenedParameters>'.
+
+[7m320[0m     {
+[7m   [0m [91m    ~[0m
+[7m321[0m         discardTo: isDuration,
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m323[0m         supportedLanguages: isSupportedLanguagesParameters
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m324[0m     }
+[7m   [0m [91m~~~~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m367[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<ResumedParameters>'.
+  Type '{}' is missing the following properties from type 'OptionalParameterValidator<ResumedParameters>': start, discarded
+
+[7m367[0m     {}
+[7m   [0m [91m    ~~[0m
+
+[96maudiohook/src/protocol/validators.ts[0m:[93m374[0m:[93m5[0m - [91merror[0m[90m TS2345: [0mArgument of type '{}' is not assignable to parameter of type 'OptionalParameterValidator<UpdateParameters>'.
+  Property 'language' is missing in type '{}' but required in type 'OptionalParameterValidator<UpdateParameters>'.
+
+[7m374[0m     {}
+[7m   [0m [91m    ~~[0m
+
+
+Found 26 errors in 2 files.
+
+Errors  Files
+    14  audiohook/src/client/clientsessionimpl.ts[90m:333[0m
+    12  audiohook/src/protocol/validators.ts[90m:181[0m

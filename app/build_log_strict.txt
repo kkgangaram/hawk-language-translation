@@ -1,0 +1,19 @@
+﻿
+> audiohook-sample-server@1.0.2 build
+> tsc --project tsconfig.json --pretty
+
+[96msrc/secrets-plugin.ts[0m:[93m63[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType 'Uint8Array | null | undefined' is not assignable to type 'null'.
+  Type 'undefined' is not assignable to type 'null'.
+
+[7m63[0m             secret = this.dynamicSecrets.get(keyId);
+[7m  [0m [91m            ~~~~~~[0m
+
+[96msrc/secrets-plugin.ts[0m:[93m68[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType 'Uint8Array | null | undefined' is not assignable to type 'null'.
+  Type 'undefined' is not assignable to type 'null'.
+
+[7m68[0m                 secret = this.dynamicSecrets.get(keyId);
+[7m  [0m [91m                ~~~~~~[0m
+
+
+Found 2 errors in the same file, starting at: src/secrets-plugin.ts[90m:63[0m
+
