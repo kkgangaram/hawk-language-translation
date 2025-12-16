@@ -17,18 +17,11 @@ const bigquery = new BigQuery();
 const DATASET_ID = process.env.DATASET_ID || 'chat_dataset';
 const TABLE_ID = process.env.TABLE_ID || 'messages';
 
-// Helper to ensure dataset and table exist
+// Helper to ensure table exists
 async function ensureDatasetAndTableExists() {
     try {
-        // Check/Create Dataset
-        const [datasetExists] = await bigquery.dataset(DATASET_ID).exists();
-        if (!datasetExists) {
-            console.log(`Dataset ${DATASET_ID} not found. Creating...`);
-            await bigquery.createDataset(DATASET_ID);
-            console.log(`Dataset ${DATASET_ID} created.`);
-        } else {
-            console.log(`Dataset ${DATASET_ID} already exists.`);
-        }
+        // Assumption: DATASET_ID already exists. We only check/create the table.
+
 
         // Check/Create Table
         const [tableExists] = await bigquery.dataset(DATASET_ID).table(TABLE_ID).exists();
