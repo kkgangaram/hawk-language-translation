@@ -226,6 +226,8 @@
 
             let lastChannel = null;
             let lastMessageWrapper = null;
+            let isLoadingHistory = false;
+            let liveMessageBuffer = [];
 
             if (params.conversationId) {
                 console.log('Joining conversation:', params.conversationId);
@@ -254,40 +256,37 @@
                 } else if (content.publishTime && content.publishTime.value) {
                     // From BigQuery (e.g. { value: "2023-..." })
                     timeString = new Date(content.publishTime.value).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                } else if (content.publishTime && typeof content.publishTime === 'string') {
+                    // From BigQuery flattened or other source
+                    timeString = new Date(content.publishTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 } else {
                     timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                 }
 
+                // Determine Sender Name
+                let senderName;
+                if (currentChannel === 'external') {
+                    senderName = 'Caller';
+                } else if (currentChannel === 'internal') {
+                    senderName = 'Agent';
+                } else {
+                    senderName = 'Agent';
+                }
+
                 // Check if we can group with previous message
-                // Only group if it's the exact same channel and the last element was a message wrapper
-                // AND it's not a history load (which might re-order logic, but let's keep simple)
                 if (currentChannel === lastChannel && lastMessageWrapper) {
                     const bubble = lastMessageWrapper.querySelector('.message-bubble');
-
-                    // Add a break or space before appending? 
-                    // Usually chat bubbles just append text if it's a stream, or new bubble if it's a new thought.
-                    // Assuming stream of chunks for the same thought:
+                    // Append text with a space
                     bubble.textContent += " " + textToAppend;
 
-                    // Update time
+                    // Update time and ensure sender name is preserved
                     const timeEl = lastMessageWrapper.querySelector('.message-info span');
-                    if (timeEl) timeEl.textContent = timeString;
+                    if (timeEl) timeEl.textContent = `${senderName} • ${timeString}`;
 
                 } else {
                     // Create New Message Wrapper
                     const wrapperDiv = document.createElement('div');
                     wrapperDiv.className = `message-wrapper ${currentChannel}`;
-
-                    // Determine Sender Name
-                    let senderName;
-                    if (currentChannel === 'external') {
-                        senderName = 'Caller';
-                    } else if (currentChannel === 'internal') {
-                        senderName = 'Agent';
-                    } else {
-                        // Fallback to Agent for any other channel types
-                        senderName = 'Agent';
-                    }
 
                     const bubbleDiv = document.createElement('div');
                     bubbleDiv.className = 'message-bubble';
@@ -311,9 +310,10 @@
                 translationContainer.scrollTop = translationContainer.scrollHeight;
             }
 
-            // Fetch History Handler
-            historyBtn.addEventListener('click', () => {
+            function loadHistory() {
                 if (!params.conversationId) return;
+
+                isLoadingHistory = true;
 
                 // Clear existing content and reset grouping state
                 translationContainer.innerHTML = '';
@@ -323,7 +323,7 @@
                 historyBtn.disabled = true;
                 historyBtn.textContent = 'Loading...';
 
-                // Optional: Add a loading indicator in the container
+                // Add a loading indicator in the container
                 const loadingMsg = document.createElement('div');
                 loadingMsg.className = 'system-message';
                 loadingMsg.textContent = 'Loading history...';
@@ -343,10 +343,10 @@
                         if (messages.length === 0) {
                             const info = document.createElement('div');
                             info.className = 'system-message';
-                            info.textContent = 'No history found.';
+                            info.textContent = 'No previous history found.';
                             translationContainer.appendChild(info);
                         } else {
-                            // Reset grouping for history batch (already done, but good practice)
+                            // Reset grouping for history batch
                             lastChannel = null;
                             lastMessageWrapper = null;
 
@@ -365,13 +365,29 @@
                         // Remove loading message if error
                         const loadingEl = document.getElementById('history-loading-msg');
                         if (loadingEl) loadingEl.remove();
-                        alert('Error fetching history');
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'system-message';
+                        errorMsg.textContent = 'Error loading history.';
+                        translationContainer.appendChild(errorMsg);
                     })
                     .finally(() => {
                         historyBtn.disabled = false;
-                        historyBtn.textContent = 'Show History';
+                        historyBtn.textContent = 'Show History'; // Or "Refresh History"
+                        isLoadingHistory = false;
+
+                        // Process buffered live messages
+                        if (liveMessageBuffer.length > 0) {
+                            console.log(`Processing ${liveMessageBuffer.length} buffered messages.`);
+                            liveMessageBuffer.forEach(item => {
+                                addMessageToUI(item.content, item.msg);
+                            });
+                            liveMessageBuffer = [];
+                        }
                     });
-            });
+            }
+
+            // Fetch History Handler
+            historyBtn.addEventListener('click', loadHistory);
 
 
             // Socket.IO event listener
@@ -383,12 +399,22 @@
 
                     // Filter by conversationId
                     if (content.conversationId === params.conversationId) {
-                        addMessageToUI(content, msg);
+                        if (isLoadingHistory) {
+                            console.log('Buffering live message during history load');
+                            liveMessageBuffer.push({ content, msg });
+                        } else {
+                            addMessageToUI(content, msg);
+                        }
                     }
                 } catch (e) {
                     console.error('Error parsing message data:', e);
                 }
             });
+
+            // Auto-load history start
+            if (params.conversationId) {
+                loadHistory();
+            }
         });
     </script>
 </body>
